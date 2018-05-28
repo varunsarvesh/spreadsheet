@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+table, th, td {
+    border: 1px solid black;
+}
+</style>
+
+    <meta charset="UTF-8">
+    <title>Display</title>
+</head>
+<body>
+Details
+<table>
+  <tr>
+      <th>S.no</th>
+    <th>Name</th>
+    <th>Power</th>
+  </tr>
+{% for key , value in  avenger.items %}
+    {% for keys in  value %}
+    <tr>
+        {% for k,v in  keys.items %}
+         <td>
+            <p> {{ v }} </p>
+        </td>
+        {% endfor %}
+
+    {% endfor %}
+    </tr>
+
+    {% endfor %}
+</table>
+</body>
+</html>
