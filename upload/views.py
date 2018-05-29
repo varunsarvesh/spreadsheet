@@ -3,17 +3,29 @@ import csv
 import openpyxl
 
 from django.core.exceptions import ValidationError
-from django.http import HttpResponse
+from django.http import HttpResponse, response
 from django.shortcuts import render
+from rest_framework.parsers import JSONParser
+from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 import spreadsheetupload
 from upload import forms
-from upload.functions import parse_file, viewall
+from upload.functions import parse_file, export_xl
 
 
 def xlapp(request):
     return render(request, 'index.html')
     # return HttpResponse('Upload here')
+
+
+class Json(APIView):
+    renderer_classes = (JSONRenderer, )
+    parser_classes = (JSONParser, )
+
+    def get(self):
+        return Response({"data": "data"})
 
 
 def upload(request):
@@ -45,21 +57,7 @@ def uploading(request):
              firstrow = 0
         print(header)
         print(body)
-        output = StringIO()
-        w = openpyxl.Workbook(output)
-        ws = w.create_sheet('sheet')
-
-        # i=1
-        for row in body:
-            ws.append(row)
-            # j=1
-            # for value in row:
-            #     ws.cell(row =i, column=j)
-            #     j = j+1
-            # i = i+1
-        response = HttpResponse(content_type='application/ms-excel')
-        response['Content-Disposition'] = 'attachment; filename="newfile.xlsx"'
-        w.save(response)
+        response = export_xl(body)
         return response
      return HttpResponse('uploaded')
 

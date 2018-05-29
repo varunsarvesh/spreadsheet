@@ -1,5 +1,10 @@
 import os
 import csv
+from io import StringIO
+
+import openpyxl
+from django.http import HttpResponse
+
 from .models import sheet
 
 
@@ -18,15 +23,16 @@ def parse_file(csv_file, name: str):
     #         list.append(list(row))
     # p = sheet(details=list)
     # p = sheet(name=name)
-    # p.save()
-    return
+    # p.savdef
 
 
-def viewall():
-    avenger = avengers.objects.values()
-    dict={}
-    dict['all'] = list(avenger)
-
-    # for each in avenger:
-    #     print(each.name, each.power)
-    return dict
+def export_xl(body):
+    output = StringIO()
+    w = openpyxl.Workbook(output)
+    ws = w.create_sheet('sheet')
+    for row in body:
+        ws.append(row)
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="newfile.xlsx"'
+    w.save(response)
+    return response
