@@ -1,7 +1,7 @@
 from io import StringIO
 import csv
 import openpyxl
-
+from reportlab.pdfgen import canvas
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, response
 from django.shortcuts import render
@@ -24,8 +24,9 @@ class Json(APIView):
     renderer_classes = (JSONRenderer, )
     parser_classes = (JSONParser, )
 
-    def get(self):
-        return Response({"data": "data"})
+    @staticmethod
+    def post(request):
+        return Response({"data": request.data})
 
 
 def upload(request):
@@ -57,8 +58,15 @@ def uploading(request):
              firstrow = 0
         print(header)
         print(body)
-        response = export_xl(body)
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="somefilename.pdf"'
+        p = canvas.Canvas(response)
+        p.drawString(10, 700, "llo world.")
+        p.showPage()
+        p.save()
         return response
+        # response = export_xl(body)
+        # return response
      return HttpResponse('uploaded')
 
 
